@@ -286,13 +286,9 @@ NSString* GCDWebServerGetPrimaryIPAddress(BOOL useIPv6) {
       {
         continue;
       }
-      if (((ifap->ifa_addr->sa_family == AF_INET) || (ifap->ifa_addr->sa_family == AF_INET6)) && !(ifap->ifa_flags & IFF_LOOPBACK)) {
-        if (!strncmp(ifap->ifa_name, "en", 2) || !strncmp(ifap->ifa_name, "bridge", 6)) {
-          if (ifap->ifa_addr->sa_family != AF_UNSPEC) {
-            address = GCDWebServerStringFromSockAddr(ifap->ifa_addr, NO);
-            break;
-          }
-        }
+      if ((ifap->ifa_flags & IFF_UP) && ((!useIPv6 && (ifap->ifa_addr->sa_family == AF_INET)) || (useIPv6 && (ifap->ifa_addr->sa_family == AF_INET6)))) {
+        address = GCDWebServerStringFromSockAddr(ifap->ifa_addr, NO);
+        break;
       }
     }
     freeifaddrs(list);
